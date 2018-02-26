@@ -47,7 +47,7 @@ jobs:
 
       - run:
           name: Wait for emulator
-          command: circle-android wait-for-boot
+          command: ./android-wait-for-boot.sh
           environment:
             TERM: dumb
 
