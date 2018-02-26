@@ -1,40 +1,70 @@
-# Build configuration file for Circle CI
-# needs to be named `circle.yml` and should be in the top level dir of the repo
+# CircleCi configuration version
+version: 2
 
-general:
-  artifacts:
-    - "~/build_output.zip" # Save APK's, Lint Results, and Test Results
+jobs:
+  build:
+    docker:
+      # specific environment version to avoid incompatible updates
+      - image: bitriseio/docker-android:v2017_09_09-06_45-b744
 
-machine:
-  environment:
-    ANDROID_HOME: /usr/local/android-sdk-linux
-  java:
-    version: oraclejdk8
+    working_directory: ~/workspace
 
-dependencies:
-  cache_directories:
-    - ~/.android
-    - ~/android
-  override:
-    - (echo "Downloading Android SDK v24...")
-    - (source environmentSetup.sh && getAndroidSDK)
+    steps:
 
-test:
-  override:
-    # start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window:
-        background: true
-        parallel: true
-    # wait for it to have booted
-    - circle-android wait-for-boot
-    # unlock the emulator screen
-    - sleep 30
-    - adb shell input keyevent 82
-    # run tests  against the emulator.
-    - ./gradlew connectedAndroidTest
-    # run jUnit tests
-    - ./gradlew test
-    # copy the build outputs to artifacts
-    - cp -r app/build/outputs $CIRCLE_ARTIFACTS
-    # copy the test results to the test results directory.
-    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+      - run:
+          name: Lists installed targets
+          command: android list target
+          environment:
+            TERM: dumb
+
+      - run:
+          name: List available targets and other sdk modules
+          command: sdkmanager --list --include_obsolete --verbose
+          environment:
+            TERM: dumb
+
+      #- run:
+      #    name: Install custom system image
+      #    command: sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
+      #    environment:
+      #      TERM: dumb
+
+      - run:
+          name: Create avd
+       #   command: echo no | avdmanager create avd -n testEmulator -k "system-images;android-23;google_apis;armeabi-v7a"
+          command: echo no | avdmanager create avd -n testEmulator -k "system-images;android-24;default;armeabi-v7a"
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Start emulator
+          command: /opt/android-sdk-linux/emulator/emulator -avd testEmulator -no-audio -no-window
+          background: true
+          environment:
+            TERM: dumb
+
+      - checkout
+
+      - run:
+          name: Wait for emulator
+          command: ./android-wait-for-boot.sh
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Remove lock screen
+          command: adb shell input keyevent 82
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Unit testing
+          command: ./gradlew test
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Instrumentation testing
+          command: ./gradlew connectedCheck
+          environment:
+TERM: dumb
