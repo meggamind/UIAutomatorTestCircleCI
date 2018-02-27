@@ -1,15 +1,14 @@
 package com.example.aniket.androidtestcircle
 
-import android.content.Intent
-import android.support.test.InstrumentationRegistry
+import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
+import android.support.test.espresso.matcher.ViewMatchers.withText
+import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import android.support.test.uiautomator.*
-
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
-import org.junit.Before
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -18,31 +17,17 @@ import org.junit.Before
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    private var mDevice: UiDevice? = null
 
-    @Before
-    fun initITSetup() {
-        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    }
+    @get:Rule
+    public val mActivityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
     @Test
-    @Throws(Exception::class)
-    fun testLoginProcess() {
-        val context = InstrumentationRegistry.getContext()
-        val intent = context.packageManager.getLaunchIntentForPackage(APP_NAME)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        context.startActivity(intent)
-        println("mDevice!!.currentPackageName: " + mDevice!!.currentPackageName)
-        throw Exception("mDevice!!.currentPackageName: " + mDevice!!.currentPackageName)
-
-        mDevice!!.wait(Until.hasObject(By.textContains("TESTING BUTTON")), 60000 * 1)
-        if (!UiObject(UiSelector().textContains("TESTING BUTTON")).exists()) {
-            println("View not Found ")
-            throw Exception("View not Found")
-        } else {
-            println("Found View")
-        }
+    fun ensureTextChangesWork() {
+        // Type text and then press the button.
+        Thread.sleep(4000)
+        onView(withText("Testing Button")).check(matches(isDisplayed()))
     }
+
 
     companion object {
         const val APP_NAME = "com.example.aniket.androidtestcircle"
