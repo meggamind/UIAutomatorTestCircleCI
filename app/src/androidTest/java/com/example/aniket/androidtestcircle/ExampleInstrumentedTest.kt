@@ -26,7 +26,7 @@ class ExampleInstrumentedTest {
     @get:Rule
     public val mActivityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
-    @Before
+    /* @Before
     fun unlockScreen() {
         val activity = mActivityRule.activity
         val wakeUpDevice = Runnable {
@@ -35,7 +35,7 @@ class ExampleInstrumentedTest {
                     WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         activity.runOnUiThread(wakeUpDevice)
-    }
+    } */
 
     @Test
     fun ensureTextChangesWork() {
