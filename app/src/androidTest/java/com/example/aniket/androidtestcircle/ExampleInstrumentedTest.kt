@@ -33,6 +33,7 @@ class ExampleInstrumentedTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
         println("mDevice!!.currentPackageName: " + mDevice!!.currentPackageName)
+        throw Exception("mDevice!!.currentPackageName: " + mDevice!!.currentPackageName)
 
         mDevice!!.wait(Until.hasObject(By.textContains("TESTING BUTTON")), 60000 * 1)
         if (!UiObject(UiSelector().textContains("TESTING BUTTON")).exists()) {
