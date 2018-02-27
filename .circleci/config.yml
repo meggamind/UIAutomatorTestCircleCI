@@ -12,6 +12,10 @@ jobs:
                 command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
                 background: true
             - run:
+                name: PWD #if permission for Gradlew Dependencies fail, use this.
+                command: pwd
+                command: ls
+            - run:
                 name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
                 command: sudo chmod +x ./gradlew
             - run:
